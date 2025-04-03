@@ -1,0 +1,6 @@
+services:
+  - name: cloud-translator
+    type: web
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "./start.sh"

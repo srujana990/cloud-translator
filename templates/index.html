@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Cloud Translator</h1>
+        <form id="translate-form">
+            <label for="text">Enter text:</label>
+            <input type="text" id="text" required>
+
+            <label for="source-lang">From:</label>
+            <select id="source-lang">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="pt">Portuguese</option>
+                <option value="hi">Hindi</option>
+            </select>
+
+            <label for="target-lang">To:</label>
+            <select id="target-lang">
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="en">English</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="pt">Portuguese</option>
+                <option value="hi">Hindi</option>
+            </select>
+
+            <button type="submit">Translate</button>
+        </form>
+
+        <h2 id="result"></h2>
+
+        <a href="{{ url_for('welcome') }}" class="btn">Back to Home</a>
+    </div>
+
+    <script>
+        document.getElementById("translate-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            let text = document.getElementById("text").value;
+            let sourceLang = document.getElementById("source-lang").value;
+            let targetLang = document.getElementById("target-lang").value;
+
+            fetch("/translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "text": text,
+                    "source_lang": sourceLang,
+                    "target_lang": targetLang
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerText = data.translated_text 
+                    ? "Translated Text: " + data.translated_text 
+                    : "Error: " + data.error;
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+</body>
+</html>
