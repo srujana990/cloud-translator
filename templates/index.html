@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Translator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -13,8 +12,9 @@
             <label for="text">Enter text:</label>
             <input type="text" id="text" required>
 
-            <label for="source-lang">From:</label>
-            <select id="source-lang">
+            <label for="target-lang">Translate to:</label>
+            <select id="target-lang" required>
+                <option value="" disabled selected>Select target language</option>
                 <option value="en">English</option>
                 <option value="es">Spanish</option>
                 <option value="fr">French</option>
@@ -22,24 +22,15 @@
                 <option value="it">Italian</option>
                 <option value="pt">Portuguese</option>
                 <option value="hi">Hindi</option>
-            </select>
-
-            <label for="target-lang">To:</label>
-            <select id="target-lang">
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="en">English</option>
-                <option value="de">German</option>
-                <option value="it">Italian</option>
-                <option value="pt">Portuguese</option>
-                <option value="hi">Hindi</option>
+                <option value="te">Telugu</option>
+                <option value="kn">Kannada</option>
             </select>
 
             <button type="submit">Translate</button>
         </form>
 
         <h2 id="result"></h2>
-
+        <h3 id="detected-language"></h3>
         <a href="{{ url_for('welcome') }}" class="btn">Back to Home</a>
     </div>
 
@@ -47,26 +38,32 @@
         document.getElementById("translate-form").addEventListener("submit", function(event) {
             event.preventDefault();
 
-            let text = document.getElementById("text").value;
-            let sourceLang = document.getElementById("source-lang").value;
-            let targetLang = document.getElementById("target-lang").value;
+            const text = document.getElementById("text").value.trim();
+            const targetLang = document.getElementById("target-lang").value;
 
             fetch("/translate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    "text": text,
-                    "source_lang": sourceLang,
-                    "target_lang": targetLang
-                })
+                body: JSON.stringify({ text, target_lang: targetLang })
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("result").innerText = data.translated_text 
-                    ? "Translated Text: " + data.translated_text 
-                    : "Error: " + data.error;
+                const result = document.getElementById("result");
+                const detected = document.getElementById("detected-language");
+
+                if (data.translated_text) {
+                    result.innerText = "Translated Text: " + data.translated_text;
+                    detected.innerText = "Detected Language: " + data.detected_lang.toUpperCase();
+                } else {
+                    result.innerText = data.error || "Something went wrong.";
+                    detected.innerText = "";
+                }
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => {
+                document.getElementById("result").innerText = "Something went wrong.";
+                document.getElementById("detected-language").innerText = "";
+                console.error("Error:", error);
+            });
         });
     </script>
 </body>

@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Cloud Translator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Welcome to Cloud Translator</h1>
-        <p>Translate text easily between multiple languages!</p>
+        <p class="tagline">
+            Language shouldn't be a barrier to understanding.<br>
+            <strong>Cloud Translator</strong> empowers you to explore, learn, and connect with people—no matter what language they speak.
+        </p>
         <a href="{{ url_for('translator') }}" class="btn">Start Translating</a>
     </div>
 </body>
